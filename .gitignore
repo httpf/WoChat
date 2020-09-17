@@ -32,3 +32,4 @@
 *.app
 client
 server
+.vscode/settings.json
