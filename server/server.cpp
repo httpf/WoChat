@@ -1,33 +1,21 @@
 #include "server.h"
+#include "../common/common.cpp"
 
-server::server()
+SockServer::SockServer()
 {
-    initialize();
+    //
 }
 
-server::~server()
+SockServer::~SockServer()
 {
     close(m_socket);
 }
 
-bool server::isID(std::string str)
-{
-    for (int i = 0; i < str.size(); i++)
-    {
-        int tmp = (int)str[i];
-        if (tmp >= 48 && tmp <= 57)
-        {
-            continue;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    return false;
-}
+int SockServer::m_socket = 0;
 
-void server::initialize()
+bool SockServer::initialized = false;
+
+void SockServer::initialize()
 {
     //new socket
     m_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -35,6 +23,7 @@ void server::initialize()
     servaddr.sin_family = AF_INET;
     servaddr.sin_port = htons(PORT);
     servaddr.sin_addr.s_addr = inet_addr(IP);
+
     if (bind(m_socket, (struct sockaddr *)&servaddr, sizeof(servaddr)) == -1)
     {
         perror("bind");
@@ -45,11 +34,19 @@ void server::initialize()
         perror("listen");
         exit(1);
     }
-    len = sizeof(servaddr);
+
+    initialized = true;
 }
 
-void server::getConn()
+void SockServer::getConn()
 {
+    if(!initialized)
+    {
+        std::cout << "Haven't initialized!" << std::endl;
+        return;
+    }
+
+    socklen_t len = sizeof(servaddr);
     while (1)
     {
         int conn = accept(m_socket, (struct sockaddr *)&servaddr, &len);
@@ -58,7 +55,7 @@ void server::getConn()
     }
 }
 
-void server::getMsg()
+void SockServer::getMsg()
 {
     struct timeval tv;
     tv.tv_sec = 10;
@@ -108,8 +105,12 @@ void server::getMsg()
                         it--;
                         continue;
                     }
+                    else
+                    {
+                        std::cout << "New message: " << m_buf << std::endl;
+                        msgs[it->first] = std::string(m_buf);
+                    }
 
-                    msgs[it->first] = std::string(m_buf);
                 }
 
             }
@@ -123,7 +124,7 @@ Iterate all the accepted sockets to get the user ID of them.
 If got the user ID, insert it to authSockets.
 */
 
-void server::authSocket()
+void SockServer::authSocket()
 {
     struct timeval tv;
     tv.tv_sec = 10;
@@ -206,7 +207,7 @@ void server::authSocket()
     }
 }
 
-void server::broadcastFromServer()
+void SockServer::broadcastFromServer()
 {
     char buf[1024];
     while (1)

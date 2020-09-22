@@ -33,3 +33,4 @@
 client/client
 server/server
 .vscode/settings.json
+server/main

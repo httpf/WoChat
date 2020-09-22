@@ -20,24 +20,25 @@
 #define PORT 7654
 #define IP "127.0.0.1"
 
-class server
+class SockServer
 {
 private:
-    int m_socket;
-    struct sockaddr_in servaddr;
-    socklen_t len;
+    static int m_socket;
+    static struct sockaddr_in servaddr;
+
     std::map<int,int> acceptedSockets; //sock id -> trying times
     std::map<int, std::string> authSockets; //socket id -> user id
 
     char m_buf[1024];
     std::map<int, std::string> msgs;
+    static bool initialized;
 
-    bool isID(std::string str);
-    void initialize();
 
 public:
-    server();
-    ~server();
+    SockServer();
+    ~SockServer();
+
+    static void initialize();
 
     void getConn();
     void getMsg();
