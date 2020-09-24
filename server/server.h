@@ -1,49 +1,46 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include <sys/types.h>
+#include <unistd.h>
 #include <sys/socket.h>
-#include <stdio.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <sys/shm.h>
-#include <iostream>
-#include <thread>
-#include <list>
-#include <map>
-#include <string>
 
-#define PORT 7654
-#define IP "127.0.0.1"
+const int MAXLINE = 100;
 
-class SockServer
+class Server
 {
-private:
-    static int m_socket;
-    static struct sockaddr_in servaddr;
+    private:
+        int listenfd;
+        int connfd;
+        struct sockaddr_in servaddr;
+        char *buf;
+        int port;
+        int maxsize;
 
-    std::map<int,int> acceptedSockets; //sock id -> trying times
-    std::map<int, std::string> authSockets; //socket id -> user id
+        void error(const char *);
 
-    char m_buf[1024];
-    std::map<int, std::string> msgs;
-    static bool initialized;
+    public:
+        Server(int po = 7890, int size = 50): port(po), maxsize(size)
+        { 
+            buf = new char[MAXLINE];
+        }
 
+        void socket();
+        void bind();
+        void listen();
+        void handle();
+        void start();
+        void stop()
+        {
+            close(listenfd);
+        }
 
-public:
-    SockServer();
-    ~SockServer();
+        ~Server()
+        {
+            delete [] buf;
+        }
 
-    static void initialize();
-
-    void getConn();
-    void getMsg();
-    void authSocket();  //authenticate socket by checking user ID
-    void broadcastFromServer(); //brocadcast message to every auth socket
 };
 
 #endif
