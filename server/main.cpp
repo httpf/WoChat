@@ -1,11 +1,10 @@
-#include <memory>
 #include "server.h"
 
-int main()
+int main(int argc, char** argv)
 {
-    SockServer::initialize();
-
-    std::shared_ptr<SockServer> spServer(new SockServer);
-    
-    return 0;
+    Server* ser=new Server();
+    ser->start();
+    ser->Handle();
+    ser->stop();
+return 0;
 }

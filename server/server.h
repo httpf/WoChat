@@ -1,45 +1,37 @@
-#ifndef SERVER_H
-#define SERVER_H
 
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+// #include <unistd.h>
+// #include <sys/socket.h>
+// #include <netinet/in.h>
+// #include <arpa/inet.h>
 
-const int MAXLINE = 100;
+#ifndef   SERVER_H
+#define   SERVER_H
+#include "../unified.h"
 
 class Server
 {
     private:
         int listenfd;
         int connfd;
-        struct sockaddr_in servaddr;
-        char *buf;
+        struct sockaddr_in  servaddr;
+        char*  buff;
         int port;
         int maxsize;
+    
+        void Error(const char*);
 
-        void error(const char *);
 
     public:
-        Server(int po = 7890, int size = 50): port(po), maxsize(size)
-        { 
-            buf = new char[MAXLINE];
-        }
+        Server(int Po=8000,int Size=50):port(Po),maxsize(Size){buff = new char[MAXLINE];};
 
-        void socket();
-        void bind();
-        void listen();
-        void handle();
+        void Socket();
+        void Bind();
+        void Listen();
+        void Handle();
         void start();
-        void stop()
-        {
-            close(listenfd);
-        }
+        void stop(){close(listenfd);};
 
-        ~Server()
-        {
-            delete [] buf;
-        }
+        ~Server(){delete [] buff;}
 
 };
 
