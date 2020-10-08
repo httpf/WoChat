@@ -1,8 +1,8 @@
 #include "server.h"
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-    Server* ser=new Server();
+    Server *ser = new Server();
     ser->start();
     ser->Handle();
     ser->stop();
