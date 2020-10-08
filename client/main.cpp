@@ -11,5 +11,5 @@ int main(int argc, char** argv)
     cli->handle();
     cli->stop();
 
-return 0;
+    return 0;
 }
